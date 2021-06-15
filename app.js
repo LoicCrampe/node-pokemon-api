@@ -1,14 +1,17 @@
 const express = require('express')
-const { success } = require('./helper')
+const morgan = require('morgan')
+const favicon = require('serve-favicon')
+const { success, getUniqueId } = require('./helper')
 let pokemons = require('./mock-pokemon')
 
 const app = express()
 const port = 3000
 
-app.use((req, res, next) => {
-    console.log(`URL : ${req.url}`)
-    next()
-})
+app 
+    .use(favicon(__dirname + '/favicon.ico'))
+    .use(morgan('dev'))
+    // .use(express.urlencoded({ extended: true }))
+    .use(express.json())
 
 app.get('/', (req, res) => res.send('Hello, Express 5 !'))
 
@@ -24,6 +27,22 @@ app.get('/api/pokemons/:id', (req, res) => {
     res.json(success(message, pokemon))
 })
 
+app.post('/api/pokemons', (req, res) => {
+    const id = getUniqueId(pokemons)
+    const pokemonCreated = { ...req.body, ...{id: id, created: new Date()}}
+    pokemons.push(pokemonCreated)
+    const message = `Le pokémon ${pokemonCreated.name} a bien été crée.`
+    res.json(success(message, pokemonCreated))
+})
 
+app.put('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id)
+    const pokemonUpdated = { ...req.body, id: id }
+    pokemons = pokemons.map(pokemon => {
+        return pokemon.id === id ? pokemonUpdated : pokemon
+    })
+    const message = `Le pokémon ${pokemonUpdated.name} a bien été modifié.`
+    res.json(success(message, pokemonUpdated))
+})
 
 app.listen(port, () => console.log(`Notre application Node est démarrée sur : http://localhost:${port}`))
