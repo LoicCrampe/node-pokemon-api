@@ -6,18 +6,20 @@ const bcrypt = require('bcrypt')
 
 let sequelize
 
-if(process.env.NODE_ENV === 'production') {
+if(process.env.NODE_ENV.trim() === 'production') {
     sequelize = new Sequelize('vontnzd42erv2dyd', 'pminu9y241lle9qb', 'dvsr3lm390zuseio', {
-        host: 'localhost',
+        host: 'un0jueuv2mam78uv.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
         dialect: 'mariadb',
         dialectOptions: {
             timezone: 'Etc/GMT-2',
         },
         logging: true
     })
-} else {
+}
+
+if(process.env.NODE_ENV.trim() === 'development') {
     sequelize = new Sequelize('pokedex', 'root', '', {
-        host: 'un0jueuv2mam78uv.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+        host: 'localhost',
         dialect: 'mariadb',
         dialectOptions: {
             timezone: 'Etc/GMT-2',
